@@ -1,24 +1,15 @@
 #: import C kivy.utils.get_hex_from_color
 
-<BorderLabel@Label>:
-    canvas.before:
-        Color:
-            rgba: 1, 0, 0, 1  # 设置边框颜色，这里为红色
-        Line:
-            rectangle: self.x, self.y, self.width, self.height
-<MyToolBar>:
-    orientation: "vertical"
-    FloatLayout:
-        MDToolbar:
-            title: "CartoonGAN"
-            md_bg_color: 0.12, 0.56, 1, 1
-            specific_text_color: app.theme_cls.accent_color
-            icon: "image-search-outline"
-            right_action_items: [["image", lambda x: app.show_image()]]
-        
-        BorderLabel:
-            text: "This is a bordered label"  # 设置Label的文本
-            size_hint: None, None
-            size: self.texture_size  # 根据文本大小设置Label大小
-            pos_hint: {"left": 100, "top": 1}  # 将Label放在右上角
-            color: 1, 1, 1, 1  # 设置文本颜色
+<ImageUploadLayout>:
+    orientation: 'vertical'
+    
+    Button:
+        text: 'Upload Image'
+        on_release: root.select_image()
+        size_hint_y: None
+        height: '48dp'
+        pos_hint: {'x': 0, 'y': 1}
+
+    Image:
+        id: image_preview
+        source: ''
