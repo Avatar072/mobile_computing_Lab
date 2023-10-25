@@ -1,3 +1,9 @@
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
+from torchvision import datasets, transforms
+
 from kivy.app import App
 from kivy.graphics import Line, Color
 from kivy.uix.widget import Widget
@@ -52,6 +58,11 @@ class DrawCanvasWidget(Widget):
 
 class PaintApp(App):
     def build(self):
+        # 加载保存的模型
+        # model = torch.load("mnist_cnn.pt")
+        # # 将模型设置为评估模式
+        # model.eval()
+        
         self.draw_canvas_widget = DrawCanvasWidget()
 
         return self.draw_canvas_widget  # 返回root控件
