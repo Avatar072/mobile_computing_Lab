@@ -1,87 +1,54 @@
-
-
-'''
-xujing
-2020-06-30
-
-基于kivymd和pytorch的二次元风格转换app
-
-'''
-
-from kivy.core.window import Window
-from kivy.lang import Builder
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.image import Image
-from kivy.properties import ObjectProperty
-
-from kivymd.app import MDApp
-from kivymd.uix.dialog import MDDialog
-from kivymd.uix.button import MDFlatButton
-from kivymd.uix.picker import MDDatePicker
-from kivymd.uix.menu import MDDropdownMenu, RightContent
-
-from kivymd.toast import toast
-from kivymd.uix.bottomsheet import MDGridBottomSheet
-
-from kivymd.uix.filemanager import MDFileManager
-from kivy.graphics.texture import Texture
-from kivy.uix.button import Button  # 添加导入
-from kivy.lang import Builder
-
-
-import requests
-import base64
-import json
-import cv2
-import numpy as np
-import time
-import os
-import logging
 from kivy.app import App
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.image import Image
-from kivy.uix.button import Button
-from kivy.uix.popup import Popup
-from kivy.uix.filechooser import FileChooserListView
+from kivy.graphics import Line, Color
+from kivy.uix.widget import Widget
 
-from kivy.app import App
+from kivy.uix.behaviors import ToggleButtonBehavior
+from kivy.uix.togglebutton import ToggleButton
+from kivy.utils import get_color_from_hex
 
-class ImageUploadLayout(BoxLayout):
-    def __init__(self, **kwargs):
-        super(ImageUploadLayout, self).__init__(**kwargs)
-        self.orientation = 'vertical'
-        
-        # 添加返回按钮
-        self.back_button = Button(text='Back', size_hint_y=None, height='48dp')
-        self.back_button.bind(on_release=self.go_back)
-        self.add_widget(self.back_button)
-        
-        self.upload_button = Button(text='Upload Image', size_hint_y=None, height='48dp')
-        self.upload_button.bind(on_release=self.select_image)
-        self.add_widget(self.upload_button)
-        
-        self.image_preview = Image(source='', size_hint=(None, None), size=(300, 300))
-        self.add_widget(self.image_preview)  # 将 image_preview 添加到布局中
-        
-        self.file_chooser = FileChooserListView()
-        self.file_chooser.bind(on_submit=self.load_image)
-    
-    def select_image(self, instance):
-        popup = Popup(title='Select an Image', content=self.file_chooser, size_hint=(0.9, 0.9))
-        popup.open()
-    
-    def load_image(self, instance, selection, touch):
-        if len(selection) > 0:
-            image_path = selection[0]
-            self.image_preview.source = image_path
-    
-    def go_back(self, instance):
-        # 添加返回按钮的处理逻辑
-        self.image_preview.source = ''  # 清空图像预览
+class DrawCanvasWidget(Widget):
+    def __init__(self,**kwargs):
+        super().__init__(**kwargs)
+        # 默认划线的颜色
+        # self.canvas.add(Color(rgb=[0,0,0]))
+        self.change_color(get_color_from_hex('#19caad'))  # 修改默认划线线颜色
+        self.line_width = 2
 
-class ImageUploadApp(App):
+    def on_touch_down(self,touch):
+        if Widget.on_touch_down(self,touch):
+            return
+        with self.canvas:
+            touch.ud['current_line'] = Line(points=(touch.x,touch.y),width=self.line_width)
+
+    def on_touch_move(self,touch):
+        if 'current_line' in touch.ud:
+            touch.ud['current_line'].points += (touch.x,touch.y)
+
+    def change_color(self,new_color):
+        self.last_color = new_color  # 在清除画板时使用
+        self.canvas.add(Color(*new_color))
+
+    def change_line_width(self,line_width="Normal"):
+        self.line_width = {"Thin":1,"Normal":2,"Thick":4}[line_width]
+
+
+    def clean_canvas(self):
+        saved = self.children[:]  # 保留root控件上的子控件（button)
+        self.clear_widgets()  # 清除所有控件间
+        self.canvas.clear()   # 清除canvas
+        for widget in saved:  # 将清除的子控件再画上
+            self.add_widget(widget)
+
+        self.change_color(self.last_color)
+
+
+
+
+class PaintApp(App):
     def build(self):
-        return ImageUploadLayout()
+        self.draw_canvas_widget = DrawCanvasWidget()
 
-if __name__ == '__main__':
-    ImageUploadApp().run()
+        return self.draw_canvas_widget  # 返回root控件
+
+if __name__ == "__main__":
+    PaintApp().run()
