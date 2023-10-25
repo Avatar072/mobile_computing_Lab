@@ -5,6 +5,7 @@ from kivy.uix.widget import Widget
 from kivy.uix.behaviors import ToggleButtonBehavior
 from kivy.uix.togglebutton import ToggleButton
 from kivy.utils import get_color_from_hex
+from PIL import Image as PILImage
 
 class DrawCanvasWidget(Widget):
     def __init__(self,**kwargs):
@@ -40,6 +41,11 @@ class DrawCanvasWidget(Widget):
             self.add_widget(widget)
 
         self.change_color(self.last_color)
+    
+    def save_canvas(self, filename):
+        texture = self.export_as_image()
+        texture.save(filename)
+
 
 
 
@@ -50,5 +56,9 @@ class PaintApp(App):
 
         return self.draw_canvas_widget  # 返回root控件
 
+    def save_canvas(self):
+        filename = "canvas_image.png"
+        self.draw_canvas_widget.save_canvas(filename)
+        
 if __name__ == "__main__":
     PaintApp().run()
