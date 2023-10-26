@@ -22,7 +22,7 @@ class DrawCanvasWidget(Widget):
         # 默认划线的颜色
         # self.canvas.add(Color(rgb=[0,0,0]))
         self.change_color(get_color_from_hex('#19caad'))  # 修改默认划线线颜色
-        self.line_width = 2
+        self.line_width = 10
 
     def on_touch_down(self,touch):
         if Widget.on_touch_down(self,touch):
@@ -52,8 +52,17 @@ class DrawCanvasWidget(Widget):
         self.change_color(self.last_color)
     
     def save_canvas(self, filename):
+        # 保存画布之前，将元件从画布上移除
+        saved = self.children[:]
+        self.clear_widgets()
+
+        # 导出画布为图像
         texture = self.export_as_image()
         texture.save(filename)
+
+        # 保存完成后，重新添加元件
+        for widget in saved:
+            self.add_widget(widget)
 
 
 
