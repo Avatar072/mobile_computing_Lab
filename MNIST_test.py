@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torchvision import datasets, transforms
-
+import cv2
 
 class Net(nn.Module):
     def __init__(self):
@@ -53,7 +53,7 @@ def test(model, test_loader):
     model.eval()
     test_loss = 0
     correct = 0
-    with torch.no_grad(): # disable gradient calculation for efficiency
+    with torch.no_grad(): # disable gradient calculation for efficiency # PyTorch 負責 gradient 的 engine 就會進行優化，加快速度
         for data, target in test_loader:
             # Prediction
             output = model(data)

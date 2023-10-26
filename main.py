@@ -1,3 +1,5 @@
+import cv2
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -12,6 +14,7 @@ from kivy.uix.behaviors import ToggleButtonBehavior
 from kivy.uix.togglebutton import ToggleButton
 from kivy.utils import get_color_from_hex
 from PIL import Image as PILImage
+from MNIST_test import Net
 
 class DrawCanvasWidget(Widget):
     def __init__(self,**kwargs):
@@ -54,22 +57,49 @@ class DrawCanvasWidget(Widget):
 
 
 
-
-
 class PaintApp(App):
     def build(self):
-        # 加载保存的模型
-        # model = torch.load("mnist_cnn.pt")
-        # # 将模型设置为评估模式
-        # model.eval()
-        
         self.draw_canvas_widget = DrawCanvasWidget()
+
+       
+        # 将模型设置为评估模式
+        self.model = Net()
+        self.model.load_state_dict(torch.load("mnist_cnn.pt"))
+        self.model.eval()
 
         return self.draw_canvas_widget  # 返回root控件
 
     def save_canvas(self):
         filename = "canvas_image.png"
         self.draw_canvas_widget.save_canvas(filename)
+
+           # 读取存储的图像
+        image = cv2.imread("canvas_image.png", cv2.IMREAD_GRAYSCALE)
+        # 获取图像的形状
+        height, width = image.shape
+        # 如果是彩色图像，还可以获取通道数
+        # height, width, channels = image.shape
+        print(f"图像高度：{height}")
+        print(f"图像宽度：{width}")
+        # 调整图像大小
+        resized_image = cv2.resize(image, (28, 28)).astype(np.uint8)  # 将图像转换为无符号8位整数
+
+        # 保存调整大小后的图像
+        cv2.imwrite("resized_image.png", resized_image)
+        image = cv2.resize(image, (28, 28)).astype(np.float32) / 255.0
+        image = image[None,:]  # 调整形状为 [1, 1, 28, 28]
+        image_tensor = torch.from_numpy(image).unsqueeze(0)
+
+        # 进行推理
+        with torch.no_grad():
+            output = self.model(image_tensor)
+            # output = model(image_tensor)  # 使用导入的模型
+        
+        predicted_class = output.argmax().item()
+        print("Predicted class:", predicted_class)
         
 if __name__ == "__main__":
+    # # 加载保存的模型
+    model = Net()
+    # # model.eval()
     PaintApp().run()
