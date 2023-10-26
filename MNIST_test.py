@@ -74,7 +74,7 @@ def test(model, test_loader):
 def main():
     # Training settings
     BATCH_SIZE = 64
-    EPOCHS = 2
+    EPOCHS = 10
     LOG_INTERVAL = 10
 
     # Define image transform
@@ -105,6 +105,8 @@ def main():
 
     # Test
     test(model, test_loader)
+
+
 
 
 if __name__ == '__main__':

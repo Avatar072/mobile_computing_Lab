@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-from torchvision import datasets, transforms
+from torchvision import datasets, transforms        
 
 from kivy.app import App
 from kivy.graphics import Line, Color
@@ -20,9 +20,10 @@ class DrawCanvasWidget(Widget):
     def __init__(self,**kwargs):
         super().__init__(**kwargs)
         # 默认划线的颜色
-        # self.canvas.add(Color(rgb=[0,0,0]))
-        self.change_color(get_color_from_hex('#19caad'))  # 修改默认划线线颜色
-        self.line_width = 10
+        #self.canvas.add(Color(rgb=[0,0,0]))
+        #self.change_color(get_color_from_hex('#19caad'))  # 修改默认划线线颜色
+        self.change_color(get_color_from_hex('#000000'))  # 修改默认划线线颜色
+        self.line_width = 40
 
     def on_touch_down(self,touch):
         if Widget.on_touch_down(self,touch):
@@ -97,7 +98,7 @@ class PaintApp(App):
         cv2.imwrite("resized_image.png", resized_image)
         image = cv2.resize(image, (28, 28)).astype(np.float32) / 255.0
         image = image[None,:]  # 调整形状为 [1, 1, 28, 28]
-        image_tensor = torch.from_numpy(image).unsqueeze(0)
+        image_tensor = torch.from_numpy(image).unsqueeze(1)
 
         # 进行推理
         with torch.no_grad():
