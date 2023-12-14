@@ -5,8 +5,9 @@ import torchvision.transforms as transforms
 from MNIST_test import Net
 
 # 1. 加载和预处理图像
-image = cv2.imread("canvas_image.png", cv2.IMREAD_GRAYSCALE)
-resized_image = cv2.resize(image, (28, 28))
+# image = cv2.imread("canvas_image.png", cv2.IMREAD_GRAYSCALE)
+image = cv2.imread('canvas_image_test.png')
+# resized_image = cv2.resize(image, (28, 28))
 
 # 2. 数据格式转换
 transform = transforms.Compose([
@@ -14,7 +15,8 @@ transform = transforms.Compose([
     transforms.Normalize((0.1307,), (0.3081,))  # 使用与训练数据相同的均值和标准差
 ])
 
-input_tensor = transform(resized_image).unsqueeze(0)
+# input_tensor = transform(resized_image).unsqueeze(0)
+input_tensor = transform(image).unsqueeze(1)
 
 # 3. 模型推理
 model = Net()  # 创建模型
