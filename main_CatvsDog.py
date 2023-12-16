@@ -102,6 +102,8 @@ class ImageUploadLayout(BoxLayout):
         self.file_chooser.bind(on_submit=self.load_image)
         popup = Popup(title='Select an Image', content=self.file_chooser, size_hint=(0.9, 0.9))
         popup.open()
+        # 將 popup 設定為 ImageUploadLayout 類別的屬性
+        ImageUploadLayout.popup = popup
 
     def load_image(self, instance, selection, touch):
         if len(selection) > 0:
@@ -127,6 +129,9 @@ class ImageUploadLayout(BoxLayout):
             print("Image uploaded!")
         else:
             print("Cancelled image upload.")
+        
+        # 關閉檔案選擇器的彈窗
+        ImageUploadLayout.popup.dismiss()
 
     def evaluate_image(self, image_path):
         # 新增：對上傳的圖片進行模型評估的程式碼
