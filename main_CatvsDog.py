@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.relativelayout import RelativeLayout
+from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.image import Image
 from kivy.uix.button import Button
 from kivy.uix.label import Label
@@ -66,7 +69,9 @@ model = ComplexCNN()
 model.load_state_dict(torch.load('./model/simple_cnn_model.pth'))
 model.eval()
 
-class ImageUploadLayout(BoxLayout):
+# class ImageUploadLayout(AnchorLayout):AnchorLayout
+class ImageUploadLayout(FloatLayout): 
+
     file_chooser = FileChooserListView()
 
     def __init__(self, **kwargs):
@@ -124,14 +129,15 @@ class ImageUploadLayout(BoxLayout):
 
             # 新增：對上傳的圖片進行模型評估
             # 這邊方便上傳圖片時測試辨識功能用
-            # self.evaluate_image(image_path)
+            self.evaluate_image(image_path)
 
             print("Image uploaded!")
         else:
             print("Cancelled image upload.")
         
         # 關閉檔案選擇器的彈窗
-        ImageUploadLayout.popup.dismiss()
+        # 這邊方便上傳圖片時測試辨識功能用
+        # ImageUploadLayout.popup.dismiss()
 
     def evaluate_image(self, image_path):
         # 新增：對上傳的圖片進行模型評估的程式碼
